@@ -4,11 +4,14 @@
   background-image: url("/cc-bg.svg");
   width: 36rem;
   height: 23rem;
+  max-width: 360px;
+  max-height: 230px;
   padding: 2rem;
 
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  justify-self: flex-end;
 }
 
 .cc-logo {

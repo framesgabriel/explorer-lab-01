@@ -9,7 +9,7 @@ const setCardType = (cardType) => {
   const colors = {
     visa: ["#436D99", "#2D57F2"],
     mastercard: ["#DF6F29", "#C69347"],
-    nubank: ["purple", "white"],
+    elo: ["#00A6E0", "#FFCB01"],
     default: ["black", "gray"],
   }
 
@@ -18,10 +18,11 @@ const setCardType = (cardType) => {
   ccLogo.setAttribute("src", `cc-${cardType}.svg`)
 }
 
-setCardType("mastercard")
+setCardType("default")
 
 globalThis.setCardType = setCardType
 
+// #region Masks
 const cardNumber = document.querySelector("#card-number")
 const cardNumberPattern = {
   mask: [
@@ -38,7 +39,7 @@ const cardNumberPattern = {
     {
       mask: "0000 0000 0000 0000",
       regex: /^8\d{0,15}/,
-      cardType: "nubank",
+      cardType: "elo",
     },
     {
       mask: "0000 0000 0000 0000",
@@ -47,7 +48,11 @@ const cardNumberPattern = {
   ],
   dispatch: function (appended, dynamicMasked) {
     const number = (dynamicMasked.value + appended).replace(/\D/g, "")
-    return dynamicMasked.compiledMasks.find(({ regex }) => number.match(regex))
+    const maskSelected = dynamicMasked.compiledMasks.find(({ regex }) =>
+      number.match(regex)
+    )
+    console.log(maskSelected)
+    return maskSelected
   },
 }
 
@@ -64,7 +69,7 @@ const expirationDatePattern = {
     },
     YY: {
       mask: IMask.MaskedRange,
-      from: String(new Date().getFullYear()).slice(2),
+      from: String(new Date().getFullYear() + 1).slice(2),
       to: 99,
     },
   },
@@ -78,3 +83,66 @@ const securityCodePattern = {
 }
 
 const securityCodeMasked = IMask(securityCode, securityCodePattern)
+
+// #endregion Masks
+
+function handleInputCardNumber(cardNumber) {
+  const defaultCardNumber = "1234 5678 9012 3456"
+  const ccCardNumber = document.querySelector(".cc-number")
+
+  ccCardNumber.innerText =
+    cardNumber.length > 0 ? cardNumber : defaultCardNumber
+}
+
+function handleInputName() {
+  const defaultHolderName = "FULANO DA SILVA"
+  const ccHolder = document.querySelector(".cc-holder .value")
+
+  ccHolder.innerText =
+    cardHolder.value.length > 0 ? cardHolder.value : defaultHolderName
+}
+
+function handleInputExpirationDate(expirationDate) {
+  const defaultExpirationDate = "02/32"
+  const ccExpirationDate = document.querySelector(".cc-expiration .value")
+
+  ccExpirationDate.innerText =
+    expirationDate.length > 0 ? expirationDate : defaultExpirationDate
+}
+
+function handleInputSecurityCode(securityCode) {
+  const defaultSecurityCode = "123"
+  const ccSecurityCode = document.querySelector(".cc-security .value")
+
+  ccSecurityCode.innerText =
+    securityCode.length > 0 ? securityCode : defaultSecurityCode
+}
+
+cardNumberMasked.on("accept", () => {
+  const cardType = cardNumberMasked.masked.currentMask?.cardType
+  setCardType(cardType)
+  handleInputCardNumber(cardNumberMasked.value)
+})
+
+const cardHolder = document.querySelector("#card-holder")
+cardHolder.addEventListener("input", () => {
+  handleInputName()
+})
+
+expirationDateMasked.on("accept", () => {
+  handleInputExpirationDate(expirationDateMasked.value)
+})
+
+securityCodeMasked.on("accept", () => {
+  handleInputSecurityCode(securityCodeMasked.value)
+})
+
+const addCardButton = document.querySelector("#add-card")
+addCardButton.addEventListener("click", () => {
+  alert("Cartão cadastrado com sucesso!")
+})
+
+// Prevent browser from reloading the page:
+document.querySelector("form").addEventListener("submit", (event) => {
+  event.preventDefault()
+})
