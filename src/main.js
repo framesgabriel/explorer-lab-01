@@ -137,12 +137,14 @@ securityCodeMasked.on("accept", () => {
   handleInputSecurityCode(securityCodeMasked.value)
 })
 
-const addCardButton = document.querySelector("#add-card")
-addCardButton.addEventListener("click", () => {
-  alert("Cartão cadastrado com sucesso!")
-})
-
-// Prevent browser from reloading the page:
-document.querySelector("form").addEventListener("submit", (event) => {
-  event.preventDefault()
-})
+document
+  .querySelector("form")
+  .addEventListener("submit", (event) => {
+    // Prevent browser from reloading the page:
+    event.preventDefault()
+    alert("Cartão cadastrado com sucesso!")
+  })
+  .find("input")
+  .on("invalid", function () {
+    alert("Validation failed")
+  })
